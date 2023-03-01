@@ -33,3 +33,12 @@ $ substreams-sink-prometheus run [options] <spkg>
 ```
 
 > Open the browser at [http://localhost:9102/metrics](http://localhost:9102/metrics)
+
+## Features
+
+- Consume `*.spkg` from:
+  - [x] Load URL or IPFS
+  - [ ] Read from `*.spkg` local filesystem
+  - [ ] Read from `substreams.yaml` local filesystem
+- [x] Prometheus metrics
+- [ ] Handle `cursor` restart

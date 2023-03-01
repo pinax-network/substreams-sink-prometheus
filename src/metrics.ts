@@ -23,7 +23,7 @@ export function handleClock(clock: Clock) {
     gauge3.set(head_block_time_drift > 0 ? head_block_time_drift : 0);
 }
 
-function handleCounter(promOp: PrometheusOperation) {
+export function handleCounter(promOp: PrometheusOperation) {
     if ( promOp.operation.case != "counter") return;
     const { name, labels } = promOp;
     registerCounter(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -40,7 +40,7 @@ function handleCounter(promOp: PrometheusOperation) {
     logger.log("info", "counter", {name, labels, operation, value});
 }
 
-function handleGauge(promOp: PrometheusOperation) {
+export function handleGauge(promOp: PrometheusOperation) {
     if ( promOp.operation.case != "gauge") return;
     const { name, labels } = promOp;
     registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -60,7 +60,7 @@ function handleGauge(promOp: PrometheusOperation) {
     logger.log("info", "gauge", {name, labels, operation, value});
 }
 
-function handleSummary(promOp: PrometheusOperation) {
+export function handleSummary(promOp: PrometheusOperation) {
     if ( promOp.operation.case != "summary") return;
     const { name, labels } = promOp;
     registerSummary(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -76,7 +76,7 @@ function handleSummary(promOp: PrometheusOperation) {
     logger.log("info", "summary", {name, labels, operation, value});
 }
 
-function handleHistogram(promOp: PrometheusOperation) {
+export function handleHistogram(promOp: PrometheusOperation) {
     if ( promOp.operation.case != "histogram") return;
     const { name, labels } = promOp;
     registerHistogram(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -93,7 +93,7 @@ function handleHistogram(promOp: PrometheusOperation) {
     logger.log("info", "histogram", {name, labels, operation, value});
 }
 
-function registerCounter(name: string, help = "help", labelNames: string[] = []) {
+export function registerCounter(name: string, help = "help", labelNames: string[] = []) {
     try {
         register.registerMetric(new Counter({name, help, labelNames}));
     } catch (e) {
@@ -101,7 +101,7 @@ function registerCounter(name: string, help = "help", labelNames: string[] = [])
     }
 }
 
-function registerGauge(name: string, help = "help", labelNames: string[] = []) {
+export function registerGauge(name: string, help = "help", labelNames: string[] = []) {
     try {
         register.registerMetric(new Gauge({name, help, labelNames}));
     } catch (e) {
@@ -109,7 +109,7 @@ function registerGauge(name: string, help = "help", labelNames: string[] = []) {
     }
 }
 
-function registerHistogram(name: string, help = "help", labelNames: string[] = []) {
+export function registerHistogram(name: string, help = "help", labelNames: string[] = []) {
     // TO-DO extract from substreams.yaml as config
     const buckets = [0.001, 0.01, 0.1, 1, 2, 5];
     try {
@@ -119,7 +119,7 @@ function registerHistogram(name: string, help = "help", labelNames: string[] = [
     }
 }
 
-function registerSummary(name: string, help = "help", labelNames: string[] = []) {
+export function registerSummary(name: string, help = "help", labelNames: string[] = []) {
     // TO-DO extract from substreams.yaml as config
     const percentiles = [0.01, 0.1, 0.9, 0.99];
 	const maxAgeSeconds: number = 600;
@@ -132,7 +132,7 @@ function registerSummary(name: string, help = "help", labelNames: string[] = [])
     }
 }
 
-interface PrometheusOperation {
+export interface PrometheusOperation {
     name: string
     labels: {[key: string]: string},
     operation: {
