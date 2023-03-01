@@ -2,7 +2,8 @@
     "name": "substreams-sink-prometheus",
     "version": "0.1.9",
     "description": "Substreams Prometheus sink module",
-    "main": "dist/bin/cli.js",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "bin": {
         "substreams-sink-prometheus": "dist/bin/cli.js"
     },

@@ -1,6 +1,6 @@
 import { Substreams, download } from "substreams";
-import { handleClock, handleOperation } from "./metrics";
-import { listen } from "./server"
+import { handleClock, handleOperation } from "./src/metrics";
+import { listen } from "./src/server"
 
 export async function run(spkg: string, args: {
     outputModule?: string,

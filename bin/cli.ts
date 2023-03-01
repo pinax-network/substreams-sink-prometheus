@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { run } from "./substreams";
+import { run } from "../index";
 import pkg from "../package.json";
 
 const program = new Command();
