@@ -1,4 +1,4 @@
-# [`Substreams`](https://substreams.streamingfast.io/) [Prometheus](https://prometheus.io/) sink module
+# [`Substreams`](https://substreams.streamingfast.io/) [Prometheus](https://prometheus.io/) CLI `Node.js`
 
 [<img alt="github" src="https://img.shields.io/badge/Github-substreams.prometheus-8da0cb?style=for-the-badge&logo=github" height="20">](https://github.com/pinax-network/substreams-sink-prometheus)
 [<img alt="npm" src="https://img.shields.io/npm/v/substreams-sink-prometheus.svg?style=for-the-badge&color=CB0001&logo=npm" height="20">](https://www.npmjs.com/package/substreams-sink-prometheus)
@@ -8,7 +8,7 @@
 
 ## 📖 Documentation
 
-### https://docs.rs/substreams-sink-prometheus
+### https://www.npmjs.com/package/substreams-sink-prometheus
 
 ### Further resources
 
