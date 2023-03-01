@@ -16,6 +16,10 @@
 - [**Prometheus** documentation](https://prometheus.io)
 - [**Substreams Sink Prometheus** `Rust`](https://github.com/pinax-network/substreams-sink-prometheus.rs)
 
+### Protobuf
+
+- [`pinax.substreams.sink.prometheus.v1.PrometheusOperations`](https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto)
+
 ## CLI
 [**Use pre-built binaries**](https://github.com/pinax-network/substreams-sink-prometheus/releases)
 - [x] MacOS

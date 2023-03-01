@@ -17,10 +17,10 @@ export function handleClock(clock: Clock) {
     const gauge1 = register.getSingleMetric("head_block_number") as Gauge;
     const gauge2 = register.getSingleMetric("head_block_timestamp") as Gauge;
     const gauge3 = register.getSingleMetric("head_block_time_drift") as Gauge;
-    gauge1.set(Number(clock.number));
-    gauge2.set(Number(clock.timestamp?.seconds));
+    if ( gauge1 ) gauge1.set(Number(clock.number));
+    if ( gauge2 ) gauge2.set(Number(clock.timestamp?.seconds));
     const head_block_time_drift = Math.floor(new Date().getTime() / 1000) - Number(clock.timestamp?.seconds);
-    gauge3.set(head_block_time_drift > 0 ? head_block_time_drift : 0);
+    if ( gauge3 ) gauge3.set(head_block_time_drift > 0 ? head_block_time_drift : 0);
 }
 
 export function handleCounter(promOp: PrometheusOperation) {
