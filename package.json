@@ -41,7 +41,7 @@
         "commander": "10.x",
         "dotenv": "*",
         "prom-client": "14.x",
-        "substreams": "^0.3.3",
+        "substreams": "^0.4.0",
         "winston": "3.x"
     },
     "devDependencies": {

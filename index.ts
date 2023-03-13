@@ -1,4 +1,4 @@
-import { Substreams, download } from "substreams";
+import { Substreams, download, unpack } from "substreams";
 import { handleClock, handleOperation } from "./src/metrics";
 import { listen } from "./src/server"
 import { timeout } from "./src/utils";
@@ -9,7 +9,7 @@ export * from './src/metrics'
 export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.prometheus.v1.PrometheusOperations'
 export const DEFAULT_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN'
 export const DEFAULT_OUTPUT_MODULE = 'prom_out'
-export const DEFAULT_SUBSTREAMS_ENDPOINT = 'mainnet.eth.streamingfast.io:443'
+export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443'
 // default user options
 export const DEFAULT_PORT = 9102
 export const DEFAULT_ADDRESS = 'localhost'
@@ -44,8 +44,13 @@ export async function run(spkg: string, options: {
     // delay before start
     if ( options.delayBeforeStart ) await timeout(Number(options.delayBeforeStart) * 1000);
     
+    // Download Substream from URL or IPFS
+    const binary = await download(spkg);
+    // console.log(binary);
+    // process.exit();
+
     // Initialize Substreams
-    const substreams = new Substreams(outputModule, {
+    const substreams = new Substreams(binary, outputModule, {
         host: substreamsEndpoint,
         startBlockNum: options.startBlock,
         stopBlockNum: options.stopBlock,
@@ -55,10 +60,8 @@ export async function run(spkg: string, options: {
     // Initialize Prometheus server
     listen(port, address);
 
-    // Download Substream from URL or IPFS
-    const { modules, registry } = await download(spkg);
-
     // Find Protobuf message types from registry
+    const { registry } = unpack(binary);
     const PrometheusOperations = registry.findMessage(MESSAGE_TYPE_NAME);
     if (!PrometheusOperations) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
     
@@ -69,13 +72,13 @@ export async function run(spkg: string, options: {
 
     substreams.on("mapOutput", output => {
         // Handle Prometheus Operations
-        if (!output.data.mapOutput.typeUrl.match(MESSAGE_TYPE_NAME)) return;
-        const decoded = PrometheusOperations.fromBinary(output.data.mapOutput.value);
+        if (!output.data.value.typeUrl.match(MESSAGE_TYPE_NAME)) return;
+        const decoded = PrometheusOperations.fromBinary(output.data.value.value);
         for ( const operation of decoded.operations ) {
             handleOperation(operation);
         }
     });
 
     // start streaming Substream
-    await substreams.start(modules);
+    await substreams.start();
 }
