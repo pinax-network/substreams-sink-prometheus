@@ -2,6 +2,8 @@ import { Substreams, download, unpack } from "substreams";
 import { handleClock, handleOperation } from "./src/metrics";
 import { listen } from "./src/server"
 import { timeout } from "./src/utils";
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 export * from './src/metrics'
 
@@ -10,6 +12,7 @@ export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.prometheus.v1.Prometheus
 export const DEFAULT_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN'
 export const DEFAULT_OUTPUT_MODULE = 'prom_out'
 export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443'
+
 // default user options
 export const DEFAULT_PORT = 9102
 export const DEFAULT_ADDRESS = 'localhost'
@@ -37,7 +40,7 @@ export async function run(spkg: string, options: {
     const port = Number(options.port ?? DEFAULT_PORT);
     const address = options.address ?? DEFAULT_ADDRESS;
 
-    // 
+    // required
     if ( !outputModule ) throw new Error('[output-module] is required')
     if ( !api_token ) throw new Error('[substreams-api-token] is required')
 
@@ -46,8 +49,6 @@ export async function run(spkg: string, options: {
     
     // Download Substream from URL or IPFS
     const binary = await download(spkg);
-    // console.log(binary);
-    // process.exit();
 
     // Initialize Substreams
     const substreams = new Substreams(binary, outputModule, {
