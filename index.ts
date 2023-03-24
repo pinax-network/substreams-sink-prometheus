@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { Substreams, download, unpack } from "substreams";
 import { handleClock, handleOperation } from "./src/metrics";
 import { listen } from "./src/server"
@@ -11,6 +12,7 @@ export * from './src/metrics'
 export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.prometheus.v1.PrometheusOperations'
 export const DEFAULT_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN'
 export const DEFAULT_OUTPUT_MODULE = 'prom_out'
+export const DEFAULT_CURSOR_FILE = 'cursor.lock'
 export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443'
 
 // default user options
@@ -26,6 +28,8 @@ export async function run(spkg: string, options: {
     substreamsApiTokenEnvvar?: string,
     substreamsApiToken?: string,
     delayBeforeStart?: string,
+    cursorFile?: string,
+    
     // user options
     address?: string,
     port?: string,
@@ -35,6 +39,7 @@ export async function run(spkg: string, options: {
     const substreamsEndpoint = options.substreamsEndpoint ?? DEFAULT_SUBSTREAMS_ENDPOINT
     const api_token_envvar = options.substreamsApiTokenEnvvar ?? DEFAULT_API_TOKEN_ENV
     const api_token = options.substreamsApiToken ?? process.env[api_token_envvar]
+    const cursorFile = options.cursorFile ?? DEFAULT_CURSOR_FILE
     
     // user options
     const port = Number(options.port ?? DEFAULT_PORT);
@@ -43,6 +48,9 @@ export async function run(spkg: string, options: {
     // required
     if ( !outputModule ) throw new Error('[output-module] is required')
     if ( !api_token ) throw new Error('[substreams-api-token] is required')
+
+    // read cursor file
+    let startCursor = fs.existsSync(cursorFile) ? fs.readFileSync(cursorFile, 'utf8') : "";
 
     // delay before start
     if ( options.delayBeforeStart ) await timeout(Number(options.delayBeforeStart) * 1000);
@@ -55,6 +63,7 @@ export async function run(spkg: string, options: {
         host: substreamsEndpoint,
         startBlockNum: options.startBlock,
         stopBlockNum: options.stopBlock,
+        startCursor,
         authorization: api_token,
     });
 
@@ -66,9 +75,8 @@ export async function run(spkg: string, options: {
     const PrometheusOperations = registry.findMessage(MESSAGE_TYPE_NAME);
     if (!PrometheusOperations) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
     
-    // TO-DO change as `substreams.on("clock", clock => {})` once implemented
-    substreams.on("block", block => {
-        if ( block.clock) handleClock(block.clock);
+    substreams.on("clock", clock => {
+        handleClock(clock);
     });
 
     substreams.on("mapOutput", output => {
@@ -78,6 +86,10 @@ export async function run(spkg: string, options: {
         for ( const operation of decoded.operations ) {
             handleOperation(operation);
         }
+    });
+
+    substreams.on("cursor", cursor => {
+        fs.writeFileSync(cursorFile, cursor);
     });
 
     // start streaming Substream

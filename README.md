@@ -45,4 +45,4 @@ $ substreams-sink-prometheus run [options] <spkg>
   - [ ] Read from `*.spkg` local filesystem
   - [ ] Read from `substreams.yaml` local filesystem
 - [x] Prometheus metrics
-- [ ] Handle `cursor` restart
+- [x] Handle `cursor` on restart (saves `cursor.lock` file on disk)
