@@ -11,16 +11,18 @@ export function handleOperation(promOp: PrometheusOperation) {
 }
 
 export function handleClock(clock: Clock) {
+    const block_num = Number(clock.number);
+    const seconds = Number(clock.timestamp?.seconds);
+    const head_block_time_drift = Math.floor((new Date().valueOf() / 1000) - seconds);
     registerGauge("head_block_number", "Last block number processed by Substreams Sink");
     registerGauge("head_block_timestamp", "Last block timestamp (in seconds) processed by Substreams Sink");
-    registerGauge("head_block_drift", "Head block drift (in seconds) by Substreams Sink");
+    registerGauge("head_block_time_drift", "Head block drift (in seconds) by Substreams Sink");
     const gauge1 = register.getSingleMetric("head_block_number") as Gauge;
     const gauge2 = register.getSingleMetric("head_block_timestamp") as Gauge;
     const gauge3 = register.getSingleMetric("head_block_time_drift") as Gauge;
-    if ( gauge1 ) gauge1.set(Number(clock.number));
-    if ( gauge2 ) gauge2.set(Number(clock.timestamp?.seconds));
-    const head_block_time_drift = Math.floor(new Date().getTime() / 1000) - Number(clock.timestamp?.seconds);
-    if ( gauge3 ) gauge3.set(head_block_time_drift > 0 ? head_block_time_drift : 0);
+    if ( gauge1 ) gauge1.set(block_num);
+    if ( gauge2 ) gauge2.set(seconds);
+    if ( gauge3 ) gauge3.set(head_block_time_drift);
 }
 
 export function handleCounter(promOp: PrometheusOperation) {
