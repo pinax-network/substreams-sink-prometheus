@@ -1,6 +1,6 @@
 {
     "name": "substreams-sink-prometheus",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "Substreams Prometheus sink module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -34,7 +34,7 @@
     ],
     "license": "MIT OR Apache-2.0",
     "scripts": {
-        "prepublishOnly": "tsc",
+        "prepublishOnly": "npm run build",
         "build": "tsup index.ts bin/cli.ts --dts",
         "pkg": "ncc build bin/cli.ts -o build && pkg build/index.js"
     },
