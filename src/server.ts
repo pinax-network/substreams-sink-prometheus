@@ -1,6 +1,7 @@
 import client from "prom-client";
 import http from "node:http";
-import { logger } from "./logger";
+import { logger } from "substreams-sink";
+import { DEFAULT_ADDRESS } from "../index.js";
 
 // Prometheus Exporter
 export const register = new client.Registry();
@@ -13,10 +14,10 @@ const server = http.createServer(async (req, res) => {
     res.end(await register.metrics());
 });
 
-export async function listen(port: number, address = "localhost") {
+export async function listen(port: number, address = DEFAULT_ADDRESS) {
     return new Promise(resolve => {
         server.listen(port, address, () => {
-            logger.log("info", `Prometheus metrics server listening on http://${address}:${port}`);
+            logger.info("prometheus server", {address, port});
             resolve(true);
         });
     })

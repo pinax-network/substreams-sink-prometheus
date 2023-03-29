@@ -1,7 +1,7 @@
 import { Counter, Gauge, Histogram, Summary } from "prom-client";
-import { Clock } from "substreams";
+import { Clock, PrometheusOperation } from "substreams";
 import { register } from "./server";
-import { logger } from "./logger";
+import { logger } from "../index";
 
 export function handleOperation(promOp: PrometheusOperation) {
     handleGauge(promOp);
@@ -131,14 +131,5 @@ export function registerSummary(name: string, help = "help", labelNames: string[
         register.registerMetric(new Summary({name, help, labelNames}));
     } catch (e) {
         //
-    }
-}
-
-export interface PrometheusOperation {
-    name: string
-    labels: {[key: string]: string},
-    operation: {
-        case: "gauge" | "counter" | "summary" | "histogram",
-        value: { operation: number, value: number }
     }
 }
