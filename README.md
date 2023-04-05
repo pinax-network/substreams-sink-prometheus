@@ -32,11 +32,38 @@ $ npm install -g substreams-sink-prometheus
 ```
 
 **Run**
-```
-$ substreams-sink-prometheus run [options] [<manifest>] <module_name>
+
+```console
+Usage: substreams-sink-prometheus run [options] [<manifest>] <module_name>
+
+Substreams Prometheus sink module
+
+Arguments:
+  <manifest>                              URL or IPFS hash of Substreams package
+  module_name                             Name of the output module (declared in the manifest)
+
+Options:
+  -e --substreams-endpoint <string>       Substreams gRPC endpoint to stream data from (default:
+                                          "https://mainnet.eth.streamingfast.io:443")
+  -s --start-block <int>                  Start block to stream from (defaults to -1, which means
+                                          the initialBlock of the first module you are streaming)
+  -t --stop-block <string>                Stop block to end stream at, inclusively
+  --substreams-api-token <string>         API token for the substream endpoint
+  --substreams-api-token-envvar <string>  Environnement variable name of the API token for the
+                                          substream endpoint (default: "SUBSTREAMS_API_TOKEN")
+  --delay-before-start <int>              [OPERATOR] Amount of time in milliseconds (ms) to wait
+                                          before starting any internal processes, can be used to
+                                          perform to maintenance on the pod before actually letting
+                                          it starts (default: "0")
+  --cursor-file <string>                  cursor lock file (default: "cursor.lock")
+  --production-mode <bool>                Enable Production Mode, with high-speed parallel
+                                          processing (default: true)
+  -p --port <int>                         Listens on port number. (default: "9102")
+  -a --address <string>                   Prometheus address to connect. (default: "localhost")
+  -h, --help                              display help for command
 ```
 
-> Open the browser at [http://localhost:9102/metrics](http://localhost:9102/metrics)
+> Open the browser at [http://localhost:9102](http://localhost:9102)
 
 ## Features
 
