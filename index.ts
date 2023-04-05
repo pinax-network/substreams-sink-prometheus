@@ -1,8 +1,8 @@
-import { createHash, download, PrometheusOperations } from "substreams";
+import { createHash, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import pkg from "./package.json";
 import { listen } from "./src/server";
-import { handleOperation } from "./src/metrics";
+import { handleClock, handleOperations } from "./src/metrics";
 
 logger.defaultMeta = { service: pkg.name };
 export { logger };
@@ -10,6 +10,7 @@ export { logger };
 // default user options
 export const DEFAULT_ADDRESS = 'localhost';
 export const DEFAULT_PORT = 9102;
+export const TYPE_NAME = "pinax.substreams.sink.prometheus.v1.PrometheusOperations"
 
 export interface ActionOptions extends RunOptions {
     address: string;
@@ -27,11 +28,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
     // Run Substreams
     const substreams = run(spkg, moduleName, options);
-    substreams.on("anyMessage", (message: PrometheusOperations) => {
-        for ( const operation of message.operations ) {
-            handleOperation(operation);
-        }
-        logger.info("anyMessage", message);
-    })
+    substreams.on("anyMessage", handleOperations)
+    substreams.on("clock", handleClock);
     substreams.start(options.delayBeforeStart);
 }

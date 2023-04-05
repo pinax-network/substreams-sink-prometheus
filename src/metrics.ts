@@ -1,7 +1,13 @@
 import { Counter, Gauge, Histogram, Summary } from "prom-client";
-import { Clock, PrometheusOperation } from "substreams";
+import { Clock, PrometheusOperation, PrometheusOperations } from "substreams";
 import { register } from "./server";
 import { logger } from "../index";
+
+export function handleOperations(message: PrometheusOperations) {
+    for ( const operation of message?.operations || [] ) {
+        handleOperation(operation);
+    }
+}
 
 export function handleOperation(promOp: PrometheusOperation) {
     handleGauge(promOp);
@@ -11,6 +17,7 @@ export function handleOperation(promOp: PrometheusOperation) {
 }
 
 export function handleClock(clock: Clock) {
+    logger.info("clock", clock);
     const block_num = Number(clock.number);
     const seconds = Number(clock.timestamp?.seconds);
     const head_block_time_drift = Math.floor((new Date().valueOf() / 1000) - seconds);
@@ -39,7 +46,7 @@ export function handleCounter(promOp: PrometheusOperation) {
         case 8: counter.reset(); break; // RESET
         default: return; // SKIP
     }
-    logger.log("info", "counter", {name, labels, operation, value});
+    logger.info("counter", {name, labels, operation, value});
 }
 
 export function handleGauge(promOp: PrometheusOperation) {
@@ -59,7 +66,7 @@ export function handleGauge(promOp: PrometheusOperation) {
         case 8: gauge.reset(); break; // RESET
         default: return; // SKIP
     }
-    logger.log("info", "gauge", {name, labels, operation, value});
+    logger.info("gauge", {name, labels, operation, value});
 }
 
 export function handleSummary(promOp: PrometheusOperation) {
@@ -75,7 +82,7 @@ export function handleSummary(promOp: PrometheusOperation) {
         case 8: summary.reset(); break; // RESET
         default: return; // SKIP
     }
-    logger.log("info", "summary", {name, labels, operation, value});
+    logger.info("summary", {name, labels, operation, value});
 }
 
 export function handleHistogram(promOp: PrometheusOperation) {
@@ -92,7 +99,7 @@ export function handleHistogram(promOp: PrometheusOperation) {
         case 8: histogram.reset(); break; // RESET
         default: return; // SKIP
     }
-    logger.log("info", "histogram", {name, labels, operation, value});
+    logger.info("histogram", {name, labels, operation, value});
 }
 
 export function registerCounter(name: string, help = "help", labelNames: string[] = []) {
