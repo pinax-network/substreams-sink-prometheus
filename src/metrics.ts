@@ -1,5 +1,5 @@
 import { Counter, Gauge, Histogram, Summary } from "prom-client";
-import { Clock, PrometheusOperation, PrometheusOperations } from "substreams";
+import { Clock, PrometheusOperation, PrometheusOperations, Substreams } from "substreams";
 import { register } from "./server";
 import { logger } from "../index";
 
@@ -14,6 +14,22 @@ export function handleOperation(promOp: PrometheusOperation) {
     handleCounter(promOp);
     handleSummary(promOp);
     handleHistogram(promOp);
+}
+
+export function handleManifest(substreams: Substreams, manifest: string, hash: string) {
+    logger.info("manifest", {manifest, hash});
+    const labelNames = ["hash", "manifest", "outputModule", "host", "auth", "startBlockNum", "productionMode"];
+    registerGauge("manifest", "Substreams manifest and sha256 hash of map module", labelNames);
+    const gauge = register.getSingleMetric("manifest") as Gauge;
+    gauge.labels({
+        hash,
+        manifest,
+        outputModule: substreams.outputModule,
+        host: substreams.host,
+        auth: substreams.auth,
+        startBlockNum: substreams.startBlockNum,
+        productionMode: String(substreams.productionMode)
+    }).set(1)
 }
 
 export function handleClock(clock: Clock) {

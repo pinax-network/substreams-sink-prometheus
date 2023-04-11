@@ -2,7 +2,7 @@ import { createHash, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import pkg from "./package.json";
 import { listen } from "./src/server";
-import { handleClock, handleOperations } from "./src/metrics";
+import { handleClock, handleManifest, handleOperations } from "./src/metrics";
 
 logger.defaultMeta = { service: pkg.name };
 export { logger };
@@ -28,6 +28,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
     // Run Substreams
     const substreams = run(spkg, moduleName, options);
+    handleManifest(substreams, manifest, hash);
     substreams.on("anyMessage", handleOperations)
     substreams.on("clock", handleClock);
     substreams.start(options.delayBeforeStart);
