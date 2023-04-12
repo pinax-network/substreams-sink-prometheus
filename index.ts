@@ -3,6 +3,8 @@ import { run, logger, RunOptions } from "substreams-sink";
 import pkg from "./package.json";
 import { listen } from "./src/server";
 import { handleClock, handleManifest, handleOperations } from "./src/metrics";
+export * from "./src/metrics";
+export * from "./src/server";
 
 logger.defaultMeta = { service: pkg.name };
 export { logger };

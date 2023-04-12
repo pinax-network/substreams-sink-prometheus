@@ -9,7 +9,7 @@ const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics({ register });
 
 // Create a local server to serve Prometheus gauges
-const server = http.createServer(async (req, res) => {
+export const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': register.contentType });
     res.end(await register.metrics());
 });
