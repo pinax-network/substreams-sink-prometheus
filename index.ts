@@ -1,7 +1,7 @@
 import { createHash, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import pkg from "./package.json";
-import { listen } from "./src/server";
+import { collectDefaultMetrics, listen } from "./src/server";
 import { handleClock, handleManifest, handleOperations } from "./src/metrics";
 export * from "./src/metrics";
 export * from "./src/server";
@@ -27,6 +27,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
     // Initialize Prometheus server
     listen(options.port, options.address);
+    collectDefaultMetrics();
 
     // Run Substreams
     const substreams = run(spkg, moduleName, options);

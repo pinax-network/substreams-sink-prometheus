@@ -5,8 +5,11 @@ import { DEFAULT_ADDRESS } from "../index.js";
 
 // Prometheus Exporter
 export const register = new client.Registry();
-const collectDefaultMetrics = client.collectDefaultMetrics;
-collectDefaultMetrics({ register });
+
+// Collect default metrics
+export function collectDefaultMetrics() {
+    client.collectDefaultMetrics({ register });
+}
 
 // Create a local server to serve Prometheus gauges
 export const server = http.createServer(async (req, res) => {
