@@ -7,8 +7,13 @@ import { DEFAULT_ADDRESS } from "../index.js";
 export const register = new client.Registry();
 
 // Collect default metrics
-export function collectDefaultMetrics() {
-    client.collectDefaultMetrics({ register });
+export function collectDefaultMetrics(labels: Object = {}) {
+    client.collectDefaultMetrics({ register, labels });
+}
+
+// Set default labels
+export function setDefaultLabels(labels: Object = {}) {
+    register.setDefaultLabels(labels);
 }
 
 // Create a local server to serve Prometheus gauges

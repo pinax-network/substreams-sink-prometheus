@@ -1,7 +1,7 @@
 import { createHash, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import pkg from "./package.json";
-import { collectDefaultMetrics, listen } from "./src/server";
+import { collectDefaultMetrics, listen, setDefaultLabels } from "./src/server";
 import { handleClock, handleManifest, handleOperations } from "./src/metrics";
 export * from "./src/metrics";
 export * from "./src/server";
@@ -13,10 +13,13 @@ export { logger };
 export const DEFAULT_ADDRESS = 'localhost';
 export const DEFAULT_PORT = 9102;
 export const TYPE_NAME = "pinax.substreams.sink.prometheus.v1.PrometheusOperations"
+export const DEFAULT_COLLECT_DEFAULT_METRICS = true;
 
 export interface ActionOptions extends RunOptions {
     address: string;
     port: number;
+    labels: string;
+    collectDefaultMetrics: boolean;
 }
 
 export async function action(manifest: string, moduleName: string, options: ActionOptions) {
@@ -26,8 +29,9 @@ export async function action(manifest: string, moduleName: string, options: Acti
     logger.info("download", {manifest, hash});
 
     // Initialize Prometheus server
+    if ( options.collectDefaultMetrics ) collectDefaultMetrics(options.labels);
+    if ( options.labels ) setDefaultLabels(options.labels);
     listen(options.port, options.address);
-    collectDefaultMetrics();
 
     // Run Substreams
     const substreams = run(spkg, moduleName, options);
