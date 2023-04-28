@@ -22,6 +22,11 @@ export interface ActionOptions extends RunOptions {
     collectDefaultMetrics: boolean;
 }
 
+export function handleLabels(value: string, previous: {}) {
+    const params = new URLSearchParams(value);
+    return { ...previous, ...Object.fromEntries(params) };
+}
+
 export async function action(manifest: string, moduleName: string, options: ActionOptions) {
     // Download Substreams (or read from local file system)
     const spkg = await download(manifest);
