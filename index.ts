@@ -18,7 +18,7 @@ export const DEFAULT_COLLECT_DEFAULT_METRICS = true;
 export interface ActionOptions extends RunOptions {
     address: string;
     port: number;
-    labels: string;
+    labels: Object;
     collectDefaultMetrics: boolean;
 }
 
