@@ -1,6 +1,6 @@
 {
     "name": "substreams-sink-prometheus",
-    "version": "0.4.6",
+    "version": "0.4.7",
     "description": "Substreams Prometheus sink module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -39,15 +39,15 @@
         "pkg": "ncc build bin/cli.ts -o build && pkg build/index.js"
     },
     "dependencies": {
-        "prom-client": "14.x",
+        "prom-client": "latest",
         "substreams": "0.5.x",
         "substreams-sink": "0.2.x"
     },
     "devDependencies": {
-        "@types/node": "*",
+        "@types/node": "latest",
         "@vercel/ncc": "0.36.x",
-        "pkg": "5.x",
-        "tsup": "6.x",
-        "typescript": "5.x"
+        "pkg": "latest",
+        "tsup": "latest",
+        "typescript": "latest"
     }
 }
