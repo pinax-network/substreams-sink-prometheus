@@ -16,7 +16,7 @@ export function handleOperation(promOp: PrometheusOperation) {
     handleHistogram(promOp);
 }
 
-export function handleManifest(substreams: Substreams, manifest: string, hash: string) {
+export function handleManifest(substreams: any, manifest: string, hash: string) {
     logger.info("manifest", {manifest, hash});
     const labelNames = ["hash", "manifest", "outputModule", "host", "auth", "startBlockNum", "productionMode"];
     registerGauge("manifest", "Substreams manifest and sha256 hash of map module", labelNames);
