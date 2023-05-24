@@ -4,5 +4,6 @@ WORKDIR /app
 COPY . .
 
 RUN npm ci
+RUN npm run build
 
-CMD ["npm", "start"]
+ENTRYPOINT ["node", "dist/bin/cli.js"]

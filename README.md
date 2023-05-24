@@ -73,3 +73,23 @@ Options:
   - [ ] Read from `substreams.yaml` local filesystem
 - [x] Prometheus metrics
 - [x] Handle `cursor` on restart (saves `cursor.lock` file on disk)
+
+## Docker
+
+**Build**
+
+```console
+$ docker build -t substreams-sink-prometheus .
+```
+
+**Help**
+
+```console
+$ docker run substreams-sink-prometheus run --help
+```
+
+**Example**
+
+```console
+$ docker run --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN sink run https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg map_transfers -e https://eos.firehose.eosnation.io:9001 --verbose -s -1
+```
