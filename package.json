@@ -34,8 +34,9 @@
     ],
     "license": "MIT OR Apache-2.0",
     "scripts": {
+        "start": "tsx hello.ts",
         "prepublishOnly": "npm run build",
-        "build": "tsup index.ts bin/cli.ts --dts",
+        "build": "tsup hello.ts index.ts bin/cli.ts --dts",
         "pkg": "ncc build bin/cli.ts -o build && pkg --target linux-x64,mac-x64,win-x64,mac-arm64 --output substreams-sink-prometheus build/index.js"
     },
     "dependencies": {
@@ -48,6 +49,7 @@
         "@vercel/ncc": "0.36.x",
         "pkg": "latest",
         "tsup": "latest",
-        "typescript": "latest"
+        "typescript": "latest",
+        "tsx": "latest"
     }
 }
