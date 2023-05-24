@@ -1,5 +1,7 @@
 FROM node:current
 
+EXPOSE 9102
+
 WORKDIR /app
 COPY . .
 
