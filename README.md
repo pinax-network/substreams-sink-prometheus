@@ -90,6 +90,10 @@ $ docker run substreams-sink-prometheus run --help
 
 **Example**
 
+To expose Prometheus metrics with Docker
+- Address `--address 0.0.0.0`
+- Port `-p 9102:9102`
+
 ```console
-$ docker run --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN sink run https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg map_transfers -e https://eos.firehose.eosnation.io:9001 --verbose -s -1
+$ docker run -p 9102:9102 --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN sink run https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg map_transfers -e https://eos.firehose.eosnation.io:9001 --verbose -s -1 --address 0.0.0.0
 ```
