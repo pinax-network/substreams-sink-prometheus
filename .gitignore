@@ -6,6 +6,9 @@ target
 *-linux
 *-macos
 *-win.exe
+*-x64
+*-arm64
+*-x64.exe
 dist
 *.log
 data
