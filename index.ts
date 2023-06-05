@@ -6,7 +6,7 @@ import { handleClock, handleManifest, handleOperations } from "./src/metrics";
 export * from "./src/metrics";
 export * from "./src/server";
 
-logger.defaultMeta = { service: pkg.name };
+logger.settings.name = pkg.name;
 export { logger };
 
 // default user options
@@ -31,11 +31,11 @@ export async function action(manifest: string, moduleName: string, options: Acti
     // Download Substreams (or read from local file system)
     const spkg = await download(manifest);
     const hash = createHash(spkg);
-    logger.info("download", {manifest, hash});
+    logger.info("download", { manifest, hash });
 
     // Initialize Prometheus server
-    if ( options.collectDefaultMetrics ) collectDefaultMetrics(options.labels);
-    if ( options.labels ) setDefaultLabels(options.labels);
+    if (options.collectDefaultMetrics) collectDefaultMetrics(options.labels);
+    if (options.labels) setDefaultLabels(options.labels);
     listen(options.port, options.address);
 
     // Run Substreams
