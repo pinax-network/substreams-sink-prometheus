@@ -6,7 +6,7 @@ import { handleClock, handleManifest, handleOperations } from "./src/metrics";
 export * from "./src/metrics";
 export * from "./src/server";
 
-logger.settings.name = pkg.name;
+logger.setName(pkg.name);
 export { logger };
 
 // default user options
