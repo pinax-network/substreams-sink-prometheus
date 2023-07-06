@@ -1,15 +1,16 @@
 import { Counter, Gauge, Histogram, Summary } from "prom-client";
+import { PrometheusOperation, PrometheusOperations } from "../index.js";
 
 import { logger } from "../index.js";
 import { register } from "./server.js";
 
-export function handleOperations(message: any) {
+export function handleOperations(message: PrometheusOperations) {
     for (const operation of message?.operations || []) {
         handleOperation(operation);
     }
 }
 
-export function handleOperation(promOp: any) {
+export function handleOperation(promOp: PrometheusOperation) {
     handleGauge(promOp);
     handleCounter(promOp);
     handleSummary(promOp);
@@ -48,7 +49,7 @@ export function handleClock(clock: any) {
     if (gauge3) gauge3.set(head_block_time_drift);
 }
 
-export function handleCounter(promOp: any) {
+export function handleCounter(promOp: PrometheusOperation) {
     if (promOp.operation.case != "counter") return;
     const { name, labels } = promOp;
     registerCounter(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -65,7 +66,7 @@ export function handleCounter(promOp: any) {
     logger.info("counter", { name, labels, operation, value });
 }
 
-export function handleGauge(promOp: any) {
+export function handleGauge(promOp: PrometheusOperation) {
     if (promOp.operation.case != "gauge") return;
     const { name, labels } = promOp;
     registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -85,7 +86,7 @@ export function handleGauge(promOp: any) {
     logger.info("gauge", { name, labels, operation, value });
 }
 
-export function handleSummary(promOp: any) {
+export function handleSummary(promOp: PrometheusOperation) {
     if (promOp.operation.case != "summary") return;
     const { name, labels } = promOp;
     registerSummary(name, "custom help", Object.keys(labels)); // TO-DO!
@@ -101,7 +102,7 @@ export function handleSummary(promOp: any) {
     logger.info("summary", { name, labels, operation, value });
 }
 
-export function handleHistogram(promOp: any) {
+export function handleHistogram(promOp: PrometheusOperation) {
     if (promOp.operation.case != "histogram") return;
     const { name, labels } = promOp;
     registerHistogram(name, "custom help", Object.keys(labels)); // TO-DO!
