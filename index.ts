@@ -3,8 +3,10 @@ import { setup, logger, commander } from "substreams-sink";
 
 import { collectDefaultMetrics, listen, setDefaultLabels } from "./src/server.js";
 import { handleClock, handleManifest, handleOperations } from "./src/metrics.js";
+
 export * from "./src/metrics.js";
 export * from "./src/server.js";
+export * from "./src/generated/pinax/substreams/sink/prometheus/v1/prometheus_pb.js";
 
 import pkg from "./package.json" assert { type: "json" };
 

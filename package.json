@@ -36,17 +36,21 @@
     "license": "MIT OR Apache-2.0",
     "scripts": {
         "build": "tsc",
-        "prepublishOnly": "npm run build"
+        "prepublishOnly": "npm run build",
+        "codegen": "buf generate ./src/proto"
     },
     "dependencies": {
-        "prom-client": "latest",
         "@substreams/core": "^0.1.10",
+        "prom-client": "latest",
         "substreams-sink": "^0.6.1"
     },
     "devDependencies": {
+        "@bufbuild/buf": "^1.23.1",
+        "@bufbuild/protoc-gen-connect-es": "^0.11.0",
+        "@bufbuild/protoc-gen-es": "^1.2.1",
+        "@tsconfig/recommended": "latest",
         "@types/node": "latest",
-        "typescript": "latest",
         "tsx": "latest",
-        "@tsconfig/recommended": "latest"
+        "typescript": "latest"
     }
 }
