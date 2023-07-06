@@ -46,7 +46,7 @@ export async function action(options: ActionOptions) {
     const substreams = await setup(options, pkg);
     handleManifest(substreams, options.manifest!, new TextDecoder().decode(hash));
     substreams.on("anyMessage", (message, _, clock) => {
-        handleOperations(message);
+        handleOperations(message as any);
         handleClock(clock);
     });
     substreams.start(options.delayBeforeStart);
