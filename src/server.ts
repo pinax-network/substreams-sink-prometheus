@@ -1,6 +1,7 @@
 import client from "prom-client";
 import http from "node:http";
 import { logger } from "substreams-sink";
+
 import { DEFAULT_ADDRESS } from "../index.js";
 
 // Prometheus Exporter
@@ -25,7 +26,7 @@ export const server = http.createServer(async (req, res) => {
 export async function listen(port: number, address = DEFAULT_ADDRESS) {
     return new Promise(resolve => {
         server.listen(port, address, () => {
-            logger.info("prometheus server", {address, port});
+            logger.info("prometheus server", { address, port });
             resolve(true);
         });
     })

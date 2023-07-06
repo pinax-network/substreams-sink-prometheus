@@ -1,8 +1,9 @@
 {
     "name": "substreams-sink-prometheus",
-    "version": "0.5.2",
+    "version": "0.6.1",
     "description": "Substreams Prometheus sink module",
     "main": "dist/index.js",
+    "type": "module",
     "types": "dist/index.d.ts",
     "bin": {
         "substreams-sink-prometheus": "dist/bin/cli.js"
@@ -34,21 +35,18 @@
     ],
     "license": "MIT OR Apache-2.0",
     "scripts": {
-        "prepublishOnly": "npm run build",
-        "build": "tsup index.ts bin/cli.ts --dts",
-        "pkg": "ncc build bin/cli.ts -o build && pkg --target linux-x64,mac-x64,win-x64,mac-arm64 --output substreams-sink-prometheus build/index.js"
+        "build": "tsc",
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
         "prom-client": "latest",
         "@substreams/core": "^0.1.10",
-        "substreams-sink": "^0.5.0"
+        "substreams-sink": "^0.6.1"
     },
     "devDependencies": {
         "@types/node": "latest",
-        "@vercel/ncc": "0.36.x",
-        "pkg": "latest",
-        "tsup": "latest",
         "typescript": "latest",
-        "tsx": "latest"
+        "tsx": "latest",
+        "@tsconfig/recommended": "latest"
     }
 }

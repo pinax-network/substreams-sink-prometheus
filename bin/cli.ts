@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { cli } from "substreams-sink";
+import { commander } from "substreams-sink";
 import { action, DEFAULT_ADDRESS, DEFAULT_COLLECT_DEFAULT_METRICS, DEFAULT_PORT, handleLabels } from "../index.js"
-import pkg from "../package.json";
+import pkg from "../package.json" assert { type: "json" };
 
-const program = cli.program(pkg);
-const command = cli.option(program, pkg);
+const program = commander.program(pkg);
+const command = commander.run(program, pkg);
 
 command.option('-P --port <int>', 'Listens on port number.', String(DEFAULT_PORT));
 command.option('-a --address <string>', 'Prometheus address to connect.', DEFAULT_ADDRESS);

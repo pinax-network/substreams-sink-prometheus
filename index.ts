@@ -1,10 +1,12 @@
 import { fetchSubstream, createHash } from "@substreams/core";
-import { run, logger, cli } from "substreams-sink";
-import pkg from "./package.json";
-import { collectDefaultMetrics, listen, setDefaultLabels } from "./src/server";
-import { handleClock, handleManifest, handleOperations } from "./src/metrics";
-export * from "./src/metrics";
-export * from "./src/server";
+import { setup, logger, commander } from "substreams-sink";
+
+import { collectDefaultMetrics, listen, setDefaultLabels } from "./src/server.js";
+import { handleClock, handleManifest, handleOperations } from "./src/metrics.js";
+export * from "./src/metrics.js";
+export * from "./src/server.js";
+
+import pkg from "./package.json" assert { type: "json" };
 
 logger.setName(pkg.name);
 export { logger };
@@ -15,7 +17,7 @@ export const DEFAULT_PORT = 9103;
 export const TYPE_NAME = "pinax.substreams.sink.prometheus.v1.PrometheusOperations"
 export const DEFAULT_COLLECT_DEFAULT_METRICS = true;
 
-export interface ActionOptions extends cli.RunOptions {
+export interface ActionOptions extends commander.RunOptions {
     address: string;
     port: number;
     labels: Object;
@@ -36,12 +38,14 @@ export async function action(options: ActionOptions) {
     // Initialize Prometheus server
     if (options.collectDefaultMetrics) collectDefaultMetrics(options.labels);
     if (options.labels) setDefaultLabels(options.labels);
-    listen(options.port, options.address);
+    // listen(options.port, options.address);
 
     // Run Substreams
-    const substreams = run(spkg, moduleName, options);
-    handleManifest(substreams, manifest, hash);
-    substreams.on("anyMessage", handleOperations)
-    substreams.on("clock", handleClock);
+    const substreams = await setup(options, pkg);
+    handleManifest(substreams, options.manifest!, new TextDecoder().decode(hash));
+    substreams.on("anyMessage", (message, _, clock) => {
+        handleOperations(message);
+        handleClock(clock);
+    });
     substreams.start(options.delayBeforeStart);
 }
