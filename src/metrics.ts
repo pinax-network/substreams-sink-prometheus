@@ -1,5 +1,5 @@
 import { Counter, Gauge, Histogram, Summary } from "prom-client";
-import { PrometheusOperation, PrometheusOperations } from "../index.js";
+import { PrometheusOperation, PrometheusOperations } from "../index.js"; // NOT USED
 
 import { logger } from "../index.js";
 import { register } from "./server.js";
@@ -11,10 +11,12 @@ export function handleOperations(message: PrometheusOperations) {
 }
 
 export function handleOperation(promOp: PrometheusOperation) {
-    handleGauge(promOp);
-    handleCounter(promOp);
-    handleSummary(promOp);
-    handleHistogram(promOp);
+    const promOpKeys = Object.keys(promOp);
+
+    if (promOpKeys.includes("gauge")) handleGauge(promOp);
+    else if (promOpKeys.includes("counter")) handleCounter(promOp);
+    else if (promOpKeys.includes("summary")) handleSummary(promOp);
+    else if (promOpKeys.includes("histogram")) handleHistogram(promOp);
 }
 
 export function handleManifest(substreams: any, manifest: string, hash: string) {
@@ -49,71 +51,71 @@ export function handleClock(clock: any) {
     if (gauge3) gauge3.set(head_block_time_drift);
 }
 
-export function handleCounter(promOp: PrometheusOperation) {
-    if (promOp.operation.case != "counter") return;
-    const { name, labels } = promOp;
+export function handleCounter(promOp: any) {
+    const { name } = promOp;
+    const labels = promOp.labels || {};
     registerCounter(name, "custom help", Object.keys(labels)); // TO-DO!
-    const { operation, value } = promOp.operation.value;
+    const { operation, value } = promOp.counter;
     const counter = register.getSingleMetric(promOp.name) as Counter;
     if (labels) counter.labels(labels);
     switch (operation) {
-        case 1: counter.labels(labels).inc(); break; // INC
-        case 2: counter.labels(labels).inc(value); break; // ADD
-        case 7: counter.remove(labels); break; // REMOVE
-        case 8: counter.reset(); break; // RESET
+        case "OPERATION_INC": counter.labels(labels).inc(); break; // INC
+        case "OPERATION_ADD": counter.labels(labels).inc(value); break; // ADD
+        case "OPERATION_REMOVE": counter.remove(labels); break; // REMOVE
+        case "OPERATION_RESET": counter.reset(); break; // RESET
         default: return; // SKIP
     }
     logger.info("counter", { name, labels, operation, value });
 }
 
-export function handleGauge(promOp: PrometheusOperation) {
-    if (promOp.operation.case != "gauge") return;
-    const { name, labels } = promOp;
+export function handleGauge(promOp: any) {
+    const { name } = promOp;
+    const labels = promOp.labels || {};
     registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
-    const { operation, value } = promOp.operation.value;
+    const { operation, value } = promOp.gauge;
     let gauge = register.getSingleMetric(promOp.name) as Gauge;
     switch (operation) {
-        case 1: gauge.labels(labels).inc(); break; // INC
-        case 2: gauge.labels(labels).inc(value); break; // ADD
-        case 3: gauge.labels(labels).set(value); break; // SET
-        case 4: gauge.labels(labels).dec(); break; // DEC
-        case 5: gauge.labels(labels).dec(value); break; // SUB
-        case 6: gauge.labels(labels).setToCurrentTime(); break; // SET_TO_CURRENT_TIME
-        case 7: gauge.remove(labels); break; // REMOVE
-        case 8: gauge.reset(); break; // RESET
+        case "OPERATION_INC": gauge.labels(labels).inc(); break; // INC
+        case "OPERATION_ADD": gauge.labels(labels).inc(value); break; // ADD
+        case "OPERATION_SET": gauge.labels(labels).set(value); break; // SET
+        case "OPERATION_DEC": gauge.labels(labels).dec(); break; // DEC
+        case "OPERATION_SUB": gauge.labels(labels).dec(value); break; // SUB
+        case "OPERATION_SET_TO_CURRENT_TIME": gauge.labels(labels).setToCurrentTime(); break; // SET_TO_CURRENT_TIME
+        case "OPERATION_REMOVE": gauge.remove(labels); break; // REMOVE
+        case "OPERATION_RESET": gauge.reset(); break; // RESET
         default: return; // SKIP
     }
     logger.info("gauge", { name, labels, operation, value });
 }
 
-export function handleSummary(promOp: PrometheusOperation) {
-    if (promOp.operation.case != "summary") return;
-    const { name, labels } = promOp;
+export function handleSummary(promOp: any) {
+    const { name } = promOp;
+    const labels = promOp.labels || {};
     registerSummary(name, "custom help", Object.keys(labels)); // TO-DO!
-    const { operation, value } = promOp.operation.value;
+    const { operation, value } = promOp.summary;
     let summary = register.getSingleMetric(promOp.name) as Summary;
     switch (operation) {
-        case 1: summary.labels(labels).observe(value); break; // OBSERVE
-        case 2: summary.labels(labels).startTimer(); break; // START_TIMER
-        case 7: summary.remove(labels); break; // REMOVE
-        case 8: summary.reset(); break; // RESET
+        case "OPERATION_OBSERVE": summary.labels(labels).observe(value); break; // OBSERVE
+        case "OPERATION_START_TIMER": summary.labels(labels).startTimer(); break; // START_TIMER
+        case "OPERATION_REMOVE": summary.remove(labels); break; // REMOVE
+        case "OPERATION_RESET": summary.reset(); break; // RESET
         default: return; // SKIP
     }
     logger.info("summary", { name, labels, operation, value });
 }
 
-export function handleHistogram(promOp: PrometheusOperation) {
-    if (promOp.operation.case != "histogram") return;
-    const { name, labels } = promOp;
+export function handleHistogram(promOp: any) {
+    const { name } = promOp;
+    const labels = promOp.labels || {};
     registerHistogram(name, "custom help", Object.keys(labels)); // TO-DO!
-    const { operation, value } = promOp.operation.value;
+    const { operation, value } = promOp.histogram;
     let histogram = register.getSingleMetric(promOp.name) as Histogram;
     switch (operation) {
-        case 1: histogram.labels(labels).observe(value); break; // OBSERVE
-        case 2: histogram.labels(labels).startTimer(); break; // START_TIMER
-        case 3: histogram.zero(labels); break; // ZERO
-        case 7: histogram.remove(labels); break; // REMOVE
-        case 8: histogram.reset(); break; // RESET
+        case "OPERATION_OBSERVE": histogram.labels(labels).observe(value); break; // OBSERVE
+        case "OPERATION_START_TIMER": histogram.labels(labels).startTimer(); break; // START_TIMER
+        case "OPERATION_ZERO": histogram.zero(labels); break; // ZERO
+        case "OPERATION_REMOVE": histogram.remove(labels); break; // REMOVE
+        case "OPERATION_RESET": histogram.reset(); break; // RESET
         default: return; // SKIP
     }
     logger.info("histogram", { name, labels, operation, value });

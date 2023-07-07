@@ -40,7 +40,7 @@ export async function action(options: ActionOptions) {
     // Initialize Prometheus server
     if (options.collectDefaultMetrics) collectDefaultMetrics(options.labels);
     if (options.labels) setDefaultLabels(options.labels);
-    // listen(options.port, options.address);
+    listen(options.port, options.address);
 
     // Run Substreams
     const substreams = await setup(options, pkg);
@@ -49,5 +49,6 @@ export async function action(options: ActionOptions) {
         handleOperations(message as any);
         handleClock(clock);
     });
+
     substreams.start(options.delayBeforeStart);
 }
