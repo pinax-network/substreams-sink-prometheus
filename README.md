@@ -34,32 +34,31 @@ $ npm install -g substreams-sink-prometheus
 **Run**
 
 ```console
-Usage: substreams-sink-prometheus run [options] [<manifest>] <module_name>
+Usage: substreams-sink-prometheus run [options]
 
 Substreams Prometheus sink module
 
-Arguments:
-  <manifest>                              URL or IPFS hash of Substreams package
-  module_name                             Name of the output module (declared in the manifest)
-
 Options:
-  -e --substreams-endpoint <string>       Substreams gRPC endpoint to stream data from (default:
-                                          "https://mainnet.eth.streamingfast.io:443")
-  -s --start-block <int>                  Start block to stream from (defaults to -1, which means
-                                          the initialBlock of the first module you are streaming)
-  -t --stop-block <string>                Stop block to end stream at, inclusively
+  -e --substreams-endpoint <string>       Substreams gRPC endpoint to stream data from
+  --manifest <string>                     URL of Substreams package
+  --module-name <string>                  Name of the output module (declared in the manifest)
+  -s --start-block <int>                  Start block to stream from (defaults to -1, which means the initialBlock of the first module you are streaming)
+  -t --stop-block <int>                   Stop block to end stream at, inclusively
+  -p, --params <string...>                Set a params for parameterizable modules. Can be specified multiple times. (ex: -p module1=valA -p module2=valX&valY)
   --substreams-api-token <string>         API token for the substream endpoint
-  --substreams-api-token-envvar <string>  Environnement variable name of the API token for the
-                                          substream endpoint (default: "SUBSTREAMS_API_TOKEN")
-  --delay-before-start <int>              [OPERATOR] Amount of time in milliseconds (ms) to wait
-                                          before starting any internal processes, can be used to
-                                          perform to maintenance on the pod before actually letting
-                                          it starts (default: "0")
-  --cursor-file <string>                  cursor lock file (default: "cursor.lock")
-  --production-mode <bool>                Enable Production Mode, with high-speed parallel
-                                          processing (default: true)
-  -p --port <int>                         Listens on port number. (default: "9102")
+  --substreams-api-token-envvar <string>  Environnement variable name of the API token for the substream endpoint (ex: SUBSTREAMS_API_TOKEN)
+  --delay-before-start <int>              [OPERATOR] Amount of time in milliseconds (ms) to wait before starting any internal processes, can be used to perform to maintenance on the pod before actually
+                                          letting it starts
+  --cursor-file <string>                  cursor lock file (ex: cursor.lock)
+  --disable-production-mode               Disable production mode, allows debugging modules logs, stops high-speed parallel processing
+  --restart-inactivity-seconds <int>      If set, the sink will restart when inactive for over a certain amount of seconds (ex: 60)
+  --hostname <string>                     The process will listen on this hostname for any HTTP and Prometheus metrics requests (ex: localhost)
+  --port <int>                            The process will listen on this port for any HTTP and Prometheus metrics requests (ex: 9102)
+  --verbose                               Enable verbose logging
+  -P --port <int>                         Listens on port number. (default: "9103")
   -a --address <string>                   Prometheus address to connect. (default: "localhost")
+  -l --labels [...string]                 To apply generic labels to all default metrics (ex: --labels foo=bar) (default: {})
+  --collect-default-metrics <boolean>     Collect default metrics (default: true)
   -h, --help                              display help for command
 ```
 
@@ -91,9 +90,9 @@ $ docker run substreams-sink-prometheus run --help
 **Example**
 
 To expose Prometheus metrics with Docker
-- Address `--address 0.0.0.0`
+- Address `--hostname 0.0.0.0`
 - Port `-p 9102:9102`
 
 ```console
-$ docker run -p 9102:9102 --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN substreams-sink-prometheus run https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg map_transfers -e https://eos.firehose.eosnation.io:9001 --verbose -s -1 --address 0.0.0.0
+$ docker run -p 9102:9102 --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN substreams-sink-prometheus run --manifest https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg --module-name prom_out -e https://eos.firehose.eosnation.io:9001 --verbose -s -1 --hostname 0.0.0.0
 ```
