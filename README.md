@@ -94,5 +94,5 @@ To expose Prometheus metrics with Docker
 - Port `-p 9102:9102`
 
 ```console
-$ docker run -p 9102:9102 --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN substreams-sink-prometheus run --manifest https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg --module-name prom_out -e https://eos.firehose.eosnation.io:9001 --verbose -s -1 --hostname 0.0.0.0
+$ docker run -p 9102:9102 --env SUBSTREAMS_API_TOKEN=$SUBSTREAMS_API_TOKEN substreams-sink-prometheus run --manifest https://github.com/pinax-network/substreams/releases/download/eosio.token-v0.11.1/eosio-token-v0.11.1.spkg --module-name prom_out -e https://eos.firehose.eosnation.io:9001 --verbose -s -1 --hostname 0.0.0.0 --port 9102
 ```
