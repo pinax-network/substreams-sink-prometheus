@@ -1,4 +1,4 @@
-import { fetchSubstream, createHash } from "@substreams/core";
+import { fetchSubstream, createHash, createModuleHash } from "@substreams/core";
 import { setup, logger, commander } from "substreams-sink";
 
 import { collectDefaultMetrics, listen, setDefaultLabels } from "./src/server.js";
@@ -34,8 +34,9 @@ export function handleLabels(value: string, previous: {}) {
 export async function action(options: ActionOptions) {
     const spkg = await fetchSubstream(options.manifest!);
 
-    const hash = await createHash(spkg.toBinary());
-    logger.info("download", { manifest: options.manifest!, hash });
+    const hash = await createModuleHash(spkg.modules!, options.moduleName);
+
+    logger.info("download", { manifest: options.manifest!, hash: Buffer.from(hash).toString("hex") });
 
     // Initialize Prometheus server
     if (options.collectDefaultMetrics) collectDefaultMetrics(options.labels);
@@ -44,7 +45,7 @@ export async function action(options: ActionOptions) {
 
     // Run Substreams
     const substreams = await setup(options, pkg);
-    handleManifest(substreams, options.manifest!, new TextDecoder().decode(hash));
+    handleManifest(substreams, options.manifest!, Buffer.from(hash).toString("hex"));
     substreams.on("anyMessage", (message, _, clock) => {
         handleOperations(message as any);
         handleClock(clock);
