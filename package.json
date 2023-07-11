@@ -36,6 +36,7 @@
     "license": "MIT OR Apache-2.0",
     "scripts": {
         "build": "tsc",
+        "start": "tsc && node ./dist/bin/cli.js run",
         "prepublishOnly": "npm run build",
         "codegen": "buf generate ./proto"
     },
