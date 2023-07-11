@@ -8,7 +8,7 @@ export * from "./src/generated/pinax/substreams/sink/prometheus/v1/prometheus_pb
 export async function action(options: commander.RunOptions) {
     const substreams = await setup(options, pkg);
     substreams.on("anyMessage", message => {
-        handleOperations(message as any);
+        handleOperations(message);
     });
     substreams.start();
     http.listen(options);

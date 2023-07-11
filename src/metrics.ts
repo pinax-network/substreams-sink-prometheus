@@ -1,67 +1,81 @@
 import { Counter, Gauge } from "prom-client";
 import { prometheus, logger } from "substreams-sink"
-import { PrometheusOperation, PrometheusOperations } from "./generated/pinax/substreams/sink/prometheus/v1/prometheus_pb.js"; // NOT USED
+import type { AnyMessage, JsonObject, Message } from "@bufbuild/protobuf";
 
-export function handleOperations(message: PrometheusOperations) {
-    for (const operation of message?.operations || []) {
-        handleOperation(operation);
+interface PrometheusCounter {
+    name: string;
+    counter: {
+        operation: string;
+        value: number;
+        labels?: any;
     }
 }
 
-export function handleOperation(promOp: PrometheusOperation) {
-    const promOpKeys = Object.keys(promOp);
+interface PrometheusGauge {
+    name: string;
+    gauge: {
+        operation: string;
+        value: number;
+        labels?: any;
+    }
+}
 
-    if (promOpKeys.includes("gauge")) handleGauge(promOp);
-    else if (promOpKeys.includes("counter")) handleCounter(promOp);
+export function handleOperations(message: JsonObject ): void
+export function handleOperations(message: Message<AnyMessage> ): void
+export function handleOperations(message: JsonObject | Message<AnyMessage> ) {
+    for (const operation of (message as any)?.operations || []) {
+        // convert to JSON
+        handleOperation(operation.toJson ? operation.toJson() : operation);
+    }
+}
+
+export function handleOperation(promOp: any) {
+    if (promOp?.gauge) handleGauge(promOp);
+    else if (promOp?.counter) handleCounter(promOp);
     // else if (promOpKeys.includes("summary")) handleSummary(promOp);
     // else if (promOpKeys.includes("histogram")) handleHistogram(promOp);
 }
 
-export function handleCounter(promOp: any) {
-    if ( promOp.operation.case === "counter" ) {
-        const name = promOp.name;
-        const operation = promOp.operation.value.operation.toString();
-        const value = promOp.operation.value.value;
-        const labels = promOp.labels || {};
+export function handleCounter(promOp: PrometheusCounter) {
+    const name = promOp.name;
+    let { operation, value, labels } = promOp.counter;
+    if ( !labels ) labels = {}; // provide empty object if no value is provided
 
-        // register
-        prometheus.registerCounter(name, "custom help", Object.keys(labels)); // TO-DO!
-        const counter = prometheus.registry.getSingleMetric(promOp.name) as Counter;
-        if (labels) counter.labels(labels);
-        switch (operation) {
-            case "OPERATION_INC": counter.labels(labels).inc(); break; // INC
-            case "OPERATION_ADD": counter.labels(labels).inc(value); break; // ADD
-            case "OPERATION_REMOVE": counter.remove(labels); break; // REMOVE
-            case "OPERATION_RESET": counter.reset(); break; // RESET
-            default: return; // SKIP
-        }
-        logger.info("counter", { name, labels, operation, value });
+    // register
+    prometheus.registerCounter(name, "custom help", Object.keys(labels ?? {})); // TO-DO!
+    const counter = prometheus.registry.getSingleMetric(promOp.name) as Counter;
+    counter.labels(labels);
+    switch (operation) {
+        case "OPERATION_INC": counter.labels(labels).inc(); break;
+        case "OPERATION_ADD": counter.labels(labels).inc(value); break;
+        case "OPERATION_REMOVE": counter.remove(labels); break;
+        case "OPERATION_RESET": counter.reset(); break;
+        default: return; // SKIP
     }
+    logger.info("counter", { name, labels, operation, value });
 }
 
-export function handleGauge(promOp: PrometheusOperation) {
-    if ( promOp.operation.case === "gauge" ) {
-        const name = promOp.name;
-        const operation = promOp.operation.value.operation.toString();
-        const value = promOp.operation.value.value;
-        const labels = promOp.labels || {};
+export function handleGauge(promOp: PrometheusGauge) {
+    const name = promOp.name;
+    let { operation, value, labels } = promOp.gauge;
+    if ( !labels ) labels = {}; // provide empty object if no value is provided
 
-        // register
-        prometheus.registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
-        let gauge = prometheus.registry.getSingleMetric(name) as Gauge;
-        switch (operation) {
-            case "OPERATION_INC": gauge.labels(labels).inc(); break; // INC
-            case "OPERATION_ADD": gauge.labels(labels).inc(value); break; // ADD
-            case "OPERATION_SET": gauge.labels(labels).set(value); break; // SET
-            case "OPERATION_DEC": gauge.labels(labels).dec(); break; // DEC
-            case "OPERATION_SUB": gauge.labels(labels).dec(value); break; // SUB
-            case "OPERATION_SET_TO_CURRENT_TIME": gauge.labels(labels).setToCurrentTime(); break; // SET_TO_CURRENT_TIME
-            case "OPERATION_REMOVE": gauge.remove(labels); break; // REMOVE
-            case "OPERATION_RESET": gauge.reset(); break; // RESET
-            default: return; // SKIP
-        }
-        logger.info("gauge", { name, labels, operation, value });
+    // register
+    prometheus.registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
+    const gauge = prometheus.registry.getSingleMetric(name) as Gauge;
+    gauge.labels(labels);
+    switch (operation) {
+        case "OPERATION_INC": gauge.labels(labels).inc(); break;
+        case "OPERATION_ADD": gauge.labels(labels).inc(value); break;
+        case "OPERATION_SET": gauge.labels(labels).set(value); break;
+        case "OPERATION_DEC": gauge.labels(labels).dec(); break;
+        case "OPERATION_SUB": gauge.labels(labels).dec(value); break;
+        case "OPERATION_SET_TO_CURRENT_TIME": gauge.labels(labels).setToCurrentTime(); break;
+        case "OPERATION_REMOVE": gauge.remove(labels); break;
+        case "OPERATION_RESET": gauge.reset(); break;
+        default: return; // SKIP
     }
+    logger.info("gauge", { name, labels, operation, value });
 }
 
 // export function handleSummary(promOp: any) {

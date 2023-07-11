@@ -42,7 +42,7 @@
     "dependencies": {
         "@substreams/core": "^0.1.10",
         "prom-client": "latest",
-        "substreams-sink": "^0.6.3"
+        "substreams-sink": "^0.6.5"
     },
     "devDependencies": {
         "@bufbuild/buf": "latest",
