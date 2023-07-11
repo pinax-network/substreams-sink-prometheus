@@ -1,6 +1,6 @@
 {
     "name": "substreams-sink-prometheus",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "Substreams Prometheus sink module",
     "main": "dist/index.js",
     "type": "module",
@@ -42,7 +42,7 @@
     "dependencies": {
         "@substreams/core": "^0.1.10",
         "prom-client": "latest",
-        "substreams-sink": "^0.7.0"
+        "substreams-sink": "^0.7.1"
     },
     "devDependencies": {
         "@bufbuild/buf": "latest",
