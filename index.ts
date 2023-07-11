@@ -6,10 +6,10 @@ export * from "./src/metrics.js";
 export * from "./src/generated/pinax/substreams/sink/prometheus/v1/prometheus_pb.js";
 
 export async function action(options: commander.RunOptions) {
-    const substreams = await setup(options, pkg);
-    substreams.on("anyMessage", message => {
+    const { emitter } = await setup(options, pkg);
+    emitter.on("anyMessage", message => {
         handleOperations(message);
     });
-    substreams.start();
+    emitter.start();
     http.listen(options);
 }
