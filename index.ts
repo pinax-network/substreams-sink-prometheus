@@ -1,47 +1,15 @@
-import { createHash, download } from "substreams";
-import { run, logger, RunOptions } from "substreams-sink";
-import pkg from "./package.json";
-import { collectDefaultMetrics, listen, setDefaultLabels } from "./src/server";
-import { handleClock, handleManifest, handleOperations } from "./src/metrics";
-export * from "./src/metrics";
-export * from "./src/server";
+import { setup, commander, http } from "substreams-sink";
+import { handleOperations } from "./src/metrics.js";
+import pkg from "./package.json" assert { type: "json" };
 
-logger.setName(pkg.name);
-export { logger };
+export * from "./src/metrics.js";
+export * from "./src/generated/pinax/substreams/sink/prometheus/v1/prometheus_pb.js";
 
-// default user options
-export const DEFAULT_ADDRESS = 'localhost';
-export const DEFAULT_PORT = 9102;
-export const TYPE_NAME = "pinax.substreams.sink.prometheus.v1.PrometheusOperations"
-export const DEFAULT_COLLECT_DEFAULT_METRICS = true;
-
-export interface ActionOptions extends RunOptions {
-    address: string;
-    port: number;
-    labels: Object;
-    collectDefaultMetrics: boolean;
-}
-
-export function handleLabels(value: string, previous: {}) {
-    const params = new URLSearchParams(value);
-    return { ...previous, ...Object.fromEntries(params) };
-}
-
-export async function action(manifest: string, moduleName: string, options: ActionOptions) {
-    // Download Substreams (or read from local file system)
-    const spkg = await download(manifest);
-    const hash = createHash(spkg);
-    logger.info("download", { manifest, hash });
-
-    // Initialize Prometheus server
-    if (options.collectDefaultMetrics) collectDefaultMetrics(options.labels);
-    if (options.labels) setDefaultLabels(options.labels);
-    listen(options.port, options.address);
-
-    // Run Substreams
-    const substreams = run(spkg, moduleName, options);
-    handleManifest(substreams, manifest, hash);
-    substreams.on("anyMessage", handleOperations)
-    substreams.on("clock", handleClock);
-    substreams.start(options.delayBeforeStart);
+export async function action(options: commander.RunOptions) {
+    const substreams = await setup(options, pkg);
+    substreams.on("anyMessage", message => {
+        handleOperations(message);
+    });
+    substreams.start();
+    http.listen(options);
 }
