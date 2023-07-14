@@ -14,3 +14,4 @@ dist
 data
 build
 cursor.lock
+.env

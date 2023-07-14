@@ -41,7 +41,9 @@ export function handleCounter(promOp: PrometheusCounter) {
     let { operation, value, labels } = promOp.counter;
 
     // register
-    prometheus.registerCounter(name, "custom help", Object.keys(labels ?? {})); // TO-DO!
+    if ( !prometheus.registry.getSingleMetric(name) ) {
+        prometheus.registerCounter(name, "custom help", Object.keys(labels ?? {})); // TO-DO!
+    }
     const counter = prometheus.registry.getSingleMetric(promOp.name) as Counter;
 
     // provide empty object if no value is provided
@@ -65,7 +67,9 @@ export function handleGauge(promOp: PrometheusGauge) {
     if ( !labels ) labels = {}; // provide empty object if no value is provided
 
     // register
-    prometheus.registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
+    if ( !prometheus.registry.getSingleMetric(name) ) {
+        prometheus.registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
+    }
     const gauge = prometheus.registry.getSingleMetric(name) as Gauge;
 
     // provide empty object if no value is provided
