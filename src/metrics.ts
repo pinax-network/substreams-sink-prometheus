@@ -7,8 +7,8 @@ interface PrometheusCounter {
     counter: {
         operation: string;
         value: number;
-        labels?: any;
     }
+    labels?: any;
 }
 
 interface PrometheusGauge {
@@ -16,13 +16,13 @@ interface PrometheusGauge {
     gauge: {
         operation: string;
         value: number;
-        labels?: any;
     }
+    labels?: any;
 }
 
-export function handleOperations(message: JsonObject ): void
-export function handleOperations(message: Message<AnyMessage> ): void
-export function handleOperations(message: JsonObject | Message<AnyMessage> ) {
+export function handleOperations(message: JsonObject): void
+export function handleOperations(message: Message<AnyMessage>): void
+export function handleOperations(message: JsonObject | Message<AnyMessage>) {
     for (const operation of (message as any)?.operations || []) {
         // convert message to JSON
         handleOperation(operation.toJson ? operation.toJson() : operation);
@@ -38,16 +38,17 @@ export function handleOperation(promOp: any) {
 
 export function handleCounter(promOp: PrometheusCounter) {
     const name = promOp.name;
-    let { operation, value, labels } = promOp.counter;
+    let labels = promOp.labels ?? {};
+    let { operation, value } = promOp.counter;
 
     // register
-    if ( !prometheus.registry.getSingleMetric(name) ) {
+    if (!prometheus.registry.getSingleMetric(name)) {
         prometheus.registerCounter(name, "custom help", Object.keys(labels ?? {})); // TO-DO!
     }
     const counter = prometheus.registry.getSingleMetric(promOp.name) as Counter;
 
     // provide empty object if no value is provided
-    if ( labels ) counter.labels(labels);
+    if (labels) counter.labels(labels);
     else labels = {};
 
     // handle prometheus metrics
@@ -63,17 +64,17 @@ export function handleCounter(promOp: PrometheusCounter) {
 
 export function handleGauge(promOp: PrometheusGauge) {
     const name = promOp.name;
-    let { operation, value, labels } = promOp.gauge;
-    if ( !labels ) labels = {}; // provide empty object if no value is provided
+    let labels = promOp.labels ?? {};
+    let { operation, value } = promOp.gauge;
 
     // register
-    if ( !prometheus.registry.getSingleMetric(name) ) {
+    if (!prometheus.registry.getSingleMetric(name)) {
         prometheus.registerGauge(name, "custom help", Object.keys(labels)); // TO-DO!
     }
     const gauge = prometheus.registry.getSingleMetric(name) as Gauge;
 
     // provide empty object if no value is provided
-    if ( labels ) gauge.labels(labels);
+    if (labels) gauge.labels(labels);
     else labels = {};
 
     // handle prometheus metrics
