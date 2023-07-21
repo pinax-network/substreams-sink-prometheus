@@ -41,25 +41,20 @@
         "linux": "npm run build && npm run rollup && ./scripts/build.linux.sh",
         "macos": "npm run build && npm run rollup && ./scripts/build.macos.sh",
         "windows": "npm run build && npm run rollup && ./scripts/build.windows.sh",
-        "prepublishOnly": "npm run build",
-        "codegen": "buf generate ./proto"
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
         "@substreams/core": "^0.1.10",
         "prom-client": "latest",
-        "substreams-sink": "^0.7.x"
+        "substreams-sink": "file:../substreams-sink"
     },
     "devDependencies": {
-        "@bufbuild/buf": "latest",
-        "@bufbuild/protoc-gen-connect-es": "latest",
-        "@bufbuild/protoc-gen-es": "latest",
         "@rollup/plugin-commonjs": "^25.0.2",
         "@rollup/plugin-json": "^6.0.0",
         "@rollup/plugin-node-resolve": "^15.1.0",
         "@tsconfig/recommended": "latest",
         "@types/node": "latest",
         "rollup": "^3.26.2",
-        "tslib": "^2.6.0",
         "tsx": "latest",
         "typescript": "latest"
     }
