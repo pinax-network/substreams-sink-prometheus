@@ -46,7 +46,7 @@
     "dependencies": {
         "@substreams/core": "^0.1.10",
         "prom-client": "latest",
-        "substreams-sink": "file:../substreams-sink"
+        "substreams-sink": "^0.7.x"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.2",
