@@ -41,7 +41,8 @@
         "linux": "npm run build && npm run rollup && ./scripts/build.linux.sh",
         "macos": "npm run build && npm run rollup && ./scripts/build.macos.sh",
         "windows": "npm run build && npm run rollup && ./scripts/build.windows.sh",
-        "prepublishOnly": "npm run build"
+        "prepublishOnly": "npm run build",
+        "codegen": "buf generate ./proto"
     },
     "dependencies": {
         "@substreams/core": "^0.1.10",
@@ -49,6 +50,9 @@
         "substreams-sink": "^0.7.x"
     },
     "devDependencies": {
+        "@bufbuild/buf": "latest",
+        "@bufbuild/protoc-gen-connect-es": "latest",
+        "@bufbuild/protoc-gen-es": "latest",
         "@rollup/plugin-commonjs": "^25.0.2",
         "@rollup/plugin-json": "^6.0.0",
         "@rollup/plugin-node-resolve": "^15.1.0",
