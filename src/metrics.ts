@@ -2,7 +2,7 @@ import { Counter, Gauge } from "prom-client";
 import { prometheus, logger } from "substreams-sink"
 import type { AnyMessage, JsonObject, Message } from "@bufbuild/protobuf";
 
-interface PrometheusCounter {
+export interface PrometheusCounter {
     name: string;
     counter: {
         operation: string;
@@ -11,7 +11,7 @@ interface PrometheusCounter {
     labels?: any;
 }
 
-interface PrometheusGauge {
+export interface PrometheusGauge {
     name: string;
     gauge: {
         operation: string;
