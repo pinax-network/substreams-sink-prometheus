@@ -6,6 +6,9 @@ on:
 env:
     LINUX_BINARY_NAME: ${{ github.repository }}-linux
 
+permissions:
+    contents: write
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
