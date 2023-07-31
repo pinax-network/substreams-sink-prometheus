@@ -4,7 +4,7 @@ on:
     types: [ published ]
 
 env:
-    LINUX_BINARY_NAME: ${{ github.repository }}-linux
+    LINUX_BINARY_NAME: ${{ github.event.repository.name }}-linux
 
 permissions:
     contents: write
