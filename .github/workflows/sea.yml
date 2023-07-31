@@ -3,6 +3,9 @@ on:
   release:
     types: [ published ]
 
+env:
+    LINUX_BINARY_NAME: ${{ github.repository }}-linux
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -17,4 +20,4 @@ jobs:
       - run: npm run linux
       - uses: softprops/action-gh-release@v1
         with:
-          files: substreams-sink-prometheus-linux
+          files: ${{ env.LINUX_BINARY_NAME }}
