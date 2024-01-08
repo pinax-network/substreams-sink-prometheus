@@ -1,6 +1,6 @@
 {
     "name": "substreams-sink-prometheus",
-    "version": "0.7.9",
+    "version": "0.8.0",
     "description": "Substreams Prometheus sink module",
     "main": "dist/index.js",
     "type": "module",
@@ -38,30 +38,24 @@
     ],
     "license": "MIT OR Apache-2.0",
     "scripts": {
+        "prepublishOnly": "tsc",
         "start": "tsc && node ./dist/bin/cli.js run",
-        "build": "tsc",
-        "rollup": "rollup --config rollup.config.mjs",
-        "linux": "npm run build && npm run rollup && ./scripts/build.linux.sh",
-        "macos": "npm run build && npm run rollup && ./scripts/build.macos.sh",
-        "windows": "npm run build && npm run rollup && ./scripts/build.windows.sh",
-        "prepublishOnly": "npm run build",
+        "build": "bun build --compile ./index.ts --outfile substreams-sink-prometheus",
+        "pretest": "bunx tsc --noEmit",
+        "test": "bun test",
         "codegen": "buf generate ./proto"
     },
     "dependencies": {
-        "@substreams/core": "^0.1.10",
         "prom-client": "latest",
-        "substreams-sink": "^0.9.x"
+        "substreams-sink": "^0.13.x"
     },
     "devDependencies": {
-        "@bufbuild/buf": "latest",
-        "@bufbuild/protoc-gen-connect-es": "latest",
-        "@bufbuild/protoc-gen-es": "latest",
-        "@rollup/plugin-commonjs": "^25.0.2",
-        "@rollup/plugin-json": "^6.0.0",
-        "@rollup/plugin-node-resolve": "^15.1.0",
+        "@bufbuild/buf": "^1.28.1",
+        "@bufbuild/protoc-gen-es": "^1.6.0",
+        "@bufbuild/protoc-gen-connect-es": "^0.13.0",
         "@tsconfig/recommended": "latest",
         "@types/node": "latest",
-        "rollup": "^3.26.2",
+        "bun-types": "latest",
         "tsx": "latest",
         "typescript": "latest"
     }
